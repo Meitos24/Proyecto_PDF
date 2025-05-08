@@ -1,4 +1,9 @@
 import Image from "next/image"
+import Link from 'next/link'
+ 
+export function Page() {
+  return <Link href="/dashboard">Dashboard</Link>
+}
 
 export default function LargeCard({ titulo, descripcion }) {
     return (
