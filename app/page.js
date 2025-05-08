@@ -54,9 +54,37 @@ export default function Page() {
       descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
     },
     {
-      titulo: 'PDF a Excel',
+      titulo: 'Firmar PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
-    }
+    },
+    {
+      titulo: 'Marca de Agua',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: 'Rotas PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: 'HTML a PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: 'Desbloquear PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: 'Proteger PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: 'Ordenar PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
+    {
+      titulo: '',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+    },
 
   ]
 
