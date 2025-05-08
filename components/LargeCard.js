@@ -1,19 +1,16 @@
-import Image from "next/image"
-import Link from 'next/link'
- 
-export function Page() {
-  return <Link href="/dashboard">Dashboard</Link>
-}
+import Image from "next/image";
+import Link from "next/link";
 
 export default function LargeCard({ titulo, descripcion }) {
     return (
-        <div className="largeCard">
-            <Image src="/icono.svg" alt="image-icono" width="30" height="34"></Image>
-            <div className="unirPDFParent">
-                <div className="unirPDF">Unir PDF</div>
-                <div className="unirPDFTexto">Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!</div>
+        <Link href="/attachPDF/drop">
+            <div className="largeCard" style={{ cursor: "pointer", textDecoration: 'none'}}>
+                <Image src="/icono.svg" alt="image-icono" width={30} height={34} />
+                <div className="unirPDFParent">
+                    <div className="unirPDF">{titulo}</div>
+                    <div className="unirPDFTexto">{descripcion}</div>
+                </div>
             </div>
-        </div>
-    )
+        </Link>
+    );
 }
-

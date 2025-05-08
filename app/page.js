@@ -4,7 +4,7 @@ import Card from "@/components/Card";
 
 export default function Page() {
 
-  const cardArrays = [
+  const largeCardArrays = [
     {
       titulo: 'Unir PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
@@ -134,12 +134,12 @@ export default function Page() {
 
         <div className="cardSectionWrapper">
           <div className="cardSection">
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
-            <LargeCard titulo="Carta 1" descripcion="Prueba 1"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
           </div>
         </div>
 
@@ -197,15 +197,13 @@ export default function Page() {
         <div className="cardSectionWrapper2">
           <div className="cardSection2">
             {
-              cardArrays.map((card, index) => (
+              largeCardArrays.map((card, index) => (
                 <Card key={index} titulo={card.titulo} descripcion={card.descripcion} />
               ))
             }
           </div>
         </div>
       </main>
-
-      
     </>
   );
 }
