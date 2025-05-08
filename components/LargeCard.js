@@ -16,3 +16,4 @@ export default function LargeCard({ titulo, descripcion }) {
         </div>
     )
 }
+
