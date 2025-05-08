@@ -1,26 +1,104 @@
-@import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  background-color: #020205;
+}
+
+.freepdf {
+  	position: relative;
+  	font-size: 20px;
+  	font-family: Inter;
+  	color: #fff;
+  	text-align: left;
+}
+
+.unirPdf {
+  	position: relative;
+    font-size: 16px;
+  	font-weight: 500;
+    font-family: Inter;
+    color: #fff;
+    text-align: center;
+}
+.menu {
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
+  	gap: 20px;
+  	text-align: center;
+}
+.donar {
+  	position: relative;
+  	font-weight: 600;
+}
+.iconHeart {
+  	width: 17.4px;
+  	position: relative;
+  	max-height: 100%;
+}
+.donarParent {
+  	width: 112px;
+  	border-radius: 10px;
+  	background-color: #4b68ff;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: center;
+  	padding: 10px 20px;
+  	box-sizing: border-box;
+  	gap: 10px;
+}
+.navbar {
+  	width: 100%;
+  	position: relative;
+  	filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  	backdrop-filter: blur(1px);
+  	border-bottom: 2px solid #161618;
+  	box-sizing: border-box;
+  	height: 62px;
+  	display: flex;
+  	flex-direction: row;
+  	align-items: center;
+  	justify-content: space-between;
+  	padding: 0px 20px;
+  	gap: 0px;
+  	text-align: left;
+  	font-size: 16px;
+  	color: #fff;
+  	font-family: Inter;
+}
+
+.tituloPotenciaCreatividad {
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  height: 100px;
+}
+
+.textoPotenciaCreatividad {
+  width: 784px;
+  position: relative;
+  font-size: 40px;
+  display: inline-block;
+  font-family: Inter;
+  color: #fff;
+  text-align: left;
+}
+
+.subtitulo {
+  display: flex;
+  justify-content: center; /* horizontal */
+  align-items: center;     /* vertical */
+  height: 100px;
+}
+
+.subtituloTexto {
+  width: 776px;
+  position: relative;
+  font-size: 18px;
+  font-family: Inter;
+  color: #a6a7a9;
+  text-align: center;
+  display: inline-block;
+  margin-top: -10px;
 }
