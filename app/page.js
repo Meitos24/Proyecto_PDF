@@ -6,11 +6,11 @@ export default function Page() {
       <div className="navbar">
         <b className="styles.freepdf">FreePDF</b>
         <div className="menu">
-          <div className="unirPDF">Unir PDF</div>
-          <div className="unirPDF">Dividir PDF</div>
-          <div className="unirPDF">Comprimir PDF</div>
-          <div className="unirPDF">Convertir PDF</div>
-          <div className="unirPDF">Todas las herramientas</div>
+          <div className="unirPdf">Unir PDF</div>
+          <div className="unirPdf">Dividir PDF</div>
+          <div className="unirPdf">Comprimir PDF</div>
+          <div className="unirPdf">Convertir PDF</div>
+          <div className="unirPdf">Todas las herramientas</div>
         </div>
         <div className="donarParent">
           <div className="donar">Donar</div>
@@ -40,7 +40,7 @@ export default function Page() {
       <div className="subtituloPDFPopular">
         <p className="subtituloTextoPDFPopular">
           21 herramientas para convertir, comprimir y editar archivos PDF dfe forma gratuita.<br></br>
-          !Pruébalo hoy mismo!
+          ¡Pruébalo hoy mismo!
         </p>
       </div>
 
@@ -90,7 +90,7 @@ export default function Page() {
         </div>
 
         <div className="textoAgradecimientos">
-          <b className="subtextoAgradecimientos">!Gracias por ser parte de este proyecto!</b>
+          <b className="subtextoAgradecimientos">¡Gracias por ser parte de este proyecto!</b>
           <div className="experienciaTexto">Tu experiencia con nosotros es lo más</div>
         </div>
       </div>
