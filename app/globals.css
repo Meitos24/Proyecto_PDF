@@ -367,6 +367,168 @@ body {
   text-decoration: none;
 }
 
-.pruebatexto {
-  color: red;
+.unirArchivosPdf {
+  position: absolute;
+  top: 107px;
+  left: 467px;
+  font-size: 40px;
+}
+
+.unePdfY {
+  position: absolute;
+  top: 177px;
+  left: 389px;
+  font-size: 18px;
+  color: #a6a7a9;
+  text-align: center;
+}
+
+.seleccionarArchivosPdf {
+  position: relative;
+  font-weight: 600;
+}
+
+.largebutton {
+  align-self: stretch;
+  border-radius: 5px;
+  background-color: #4b68ff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.oArrastraY {
+  align-self: stretch;
+  position: relative;
+  font-size: 16px;
+  font-weight: 500;
+  color: #a6a7a9;
+  text-align: center;
+}
+
+.largebuttonParent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.drop {
+  position: absolute;
+  top: 281.5px;
+  left: 270.5px;
+  border-radius: 20px;
+  border: 5px dashed #fff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 200px;
+  font-size: 24px;
+}
+
+.freepdf {
+  position: relative;
+  font-size: 20px;
+}
+
+.dividirPdf {
+  position: relative;
+  font-weight: 500;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.iconHeart {
+  width: 17.4px;
+  position: relative;
+  max-height: 100%;
+}
+
+.donarParent {
+  width: 112px;
+  border-radius: 10px;
+  background-color: #4b68ff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  gap: 10px;
+}
+
+.navbar {
+  width: 100%;
+  position: fixed;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  backdrop-filter: blur(4px);
+  border-bottom: 2px solid #161618;
+  box-sizing: border-box;
+  height: 62px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 20px;
+  gap: 0px;
+  text-align: left;
+  font-size: 16px;
+  color: #fff;
+  font-family: Inter;
+  margin-bottom: 40px;
+  z-index: 1000;
+}
+
+.span {
+  color: #4b68ff;
+}
+
+.porGenteDe {
+  color: #fff;
+}
+
+.hechoConPorGenteDeInte {
+  font-weight: 500;
+}
+
+.freepdfHechoContainer {
+  position: relative;
+}
+
+.footer {
+  position: absolute;
+  top: 711px;
+  left: 3px;
+  width: 1277px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0px;
+  box-sizing: border-box;
+}
+
+.droppdf {
+  width: 100%;
+  position: relative;
+  background-color: #020205;
+  height: 770px;
+  overflow: hidden;
+  text-align: left;
+  font-size: 16px;
+  color: #fff;
+  font-family: Inter;
 }

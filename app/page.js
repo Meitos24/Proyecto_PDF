@@ -1,7 +1,6 @@
 import LargeCard from "@/components/LargeCard";
 import Card from "@/components/Card";
 
-
 export default function Page() {
 
   const largeCardArrays = [
@@ -91,7 +90,7 @@ export default function Page() {
   return (
     <>
       <div className="navbar">
-        <b className="styles.freepdf">FreePDF</b>
+        <b className="freepdf">FreePDF</b>
         <div className="menu">
           <div className="unirPdf">Unir PDF</div>
           <div className="unirPdf">Dividir PDF</div>
