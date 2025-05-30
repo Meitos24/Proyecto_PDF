@@ -45,5 +45,5 @@ export default function DropPage() {
                 </div>
             </div>;
         </>
-    )    
+    )
 }

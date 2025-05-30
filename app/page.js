@@ -1,90 +1,105 @@
 import LargeCard from "@/components/LargeCard";
 import Card from "@/components/Card";
+import Link from "next/link";
 
 export default function Page() {
 
   const largeCardArrays = [
     {
       titulo: 'Unir PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!',
+      link: 'unir-pdf'
     },
     {
       titulo: 'Dividir PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!',
+      link: 'dividir-pdf',
     },
     {
       titulo: 'Comprimir PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!',
+      link: 'comprimir-pdf',
     },
     {
       titulo: 'PDF a Word',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'pdf-a-word',
     },
     {
       titulo: 'PDF a PowerPoint',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'pdf-a-powerpoint'
     },
     {
       titulo: 'PDF a Excel',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'pdf-a-excel'
     },
     {
       titulo: 'Word a PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'word-a-pdf'
     },
     {
       titulo: 'PowerPoint a PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'powerpoint-a-pdf'
     },
     {
       titulo: 'Excel a PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'excel-a-pdf'
     },
     {
       titulo: 'Editar PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'editar-pdf'
     },
     {
       titulo: 'PDF a JPG',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'pdf-a-jpg'
     },
     {
       titulo: 'JPG a PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'jpg-a-pdf'
     },
     {
       titulo: 'Firmar PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'firmar-pdf'
     },
     {
       titulo: 'Marca de Agua',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'marca-de-agua'
     },
     {
-      titulo: 'Rotas PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      titulo: 'Rotar PDF',
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'rotas-pdf'
     },
     {
       titulo: 'HTML a PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. '
+      descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
+      link: 'html-a-pdf'
     },
     {
       titulo: 'Desbloquear PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras.'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras.',
+      link: 'desbloquear-pdf'
     },
     {
       titulo: 'Proteger PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras.'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras.',
+      link: 'proteger-pdf'
     },
     {
       titulo: 'Ordenar PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras.'
+      descripcion: 'Une PDF y ponlos en el orden que prefieras.',
+      link: 'ordenar-pdf'
     },
-    {
-      titulo: '',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras.'
-    },
-
   ]
 
   return (
@@ -92,14 +107,14 @@ export default function Page() {
       <div className="navbar">
         <b className="freepdf">FreePDF</b>
         <div className="menu">
-          <div className="unirPdf">Unir PDF</div>
-          <div className="unirPdf">Dividir PDF</div>
-          <div className="unirPdf">Comprimir PDF</div>
-          <div className="unirPdf">Convertir PDF</div>
-          <div className="unirPdf">Todas las herramientas</div>
+          <Link href="/tools/unir-pdf" className="unirPdf">Unir PDF</Link>
+          <Link href="/tools/dividir-pdf" className="unirPdf">Dividir PDF</Link>
+          <Link href="/tools/comprimir" className="unirPdf">Comprimir PDF</Link>
+          <Link href="/tools/convertir" className="unirPdf">Convertir PDF</Link>
+          <Link href="/" className="unirPdf">Todas las herramientas</Link>
         </div>
         <div className="donarParent">
-          <div className="donar">Donar</div>
+          <Link href="/donar" className="donar">Donar</Link>
         </div>
       </div>
 
@@ -133,13 +148,16 @@ export default function Page() {
 
         <div className="cardSectionWrapper">
           <div className="cardSection">
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
-            <LargeCard titulo="Unir PDF" descripcion="Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!"></LargeCard>
+            {largeCardArrays.slice(0, 6).map((card, index) => (
+              <LargeCard
+                key={index}
+                titulo={card.titulo}
+                descripcion={card.descripcion}
+                link={card.link}
+              />
+            ))}
           </div>
+
         </div>
 
         <div className="sobreNosotros">
