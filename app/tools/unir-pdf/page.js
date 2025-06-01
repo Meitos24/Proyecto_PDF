@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-// import { useDropzone } from "react-dropzone/.";
 
 export default function DropPage() {
 
@@ -58,7 +57,7 @@ export default function DropPage() {
                     <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
                 </div>
                 <div className={"navbar"}>
-                    <b className={"freepdf"}>FreePDF</b>
+                    <div className={"freepdf"} onClick={() => router.push('/')}>FreePDF</div>
                     <div className={"menu"}>
                         <div className={"unirPdf"}>Unir PDF</div>
                         <div className={"unirPdf"}>Dividir PDF</div>

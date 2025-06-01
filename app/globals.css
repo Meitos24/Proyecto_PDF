@@ -21,6 +21,11 @@ body {
   font-family: Inter;
   color: #fff;
   text-align: left;
+  cursor: pointer;
+}
+
+.freepdf:hover {
+  color: #a6a7a9;
 }
 
 .unirPdf {
@@ -63,6 +68,8 @@ body {
 .donar {
   position: relative;
   font-weight: 600;
+  text-decoration: none;
+  color: #fff;
 }
 .iconHeart {
   width: 17.4px;
@@ -162,8 +169,18 @@ body {
   color: #fff;
 }
 
+.btn-azul:hover {
+  background-color: #fff;
+  color: #4b68ff;
+}
+
 .btn-blanco {
   color: #4b68ff;
+}
+
+.btn-blanco:hover {
+  background-color: #4b68ff;
+  color: #ffffff;
 }
 
 .tituloPDFPopular {
@@ -247,6 +264,7 @@ body {
   font-size: 16px;
   color: #fff;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .sobreNosotros {
@@ -445,12 +463,6 @@ body {
   border-color: #4b68ff;
 }
 
-
-.freepdf {
-  position: relative;
-  font-size: 20px;
-}
-
 .dividirPdf {
   position: relative;
   font-weight: 500;
@@ -546,4 +558,13 @@ body {
   font-size: 16px;
   color: #fff;
   font-family: Inter;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#allTools {
+  scroll-margin-top: 70px; /* Ajusta según la altura de tu navbar */
 }
