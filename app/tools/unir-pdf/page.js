@@ -1,22 +1,61 @@
 'use client';
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+// import { useDropzone } from "react-dropzone/.";
 
 export default function DropPage() {
 
     const router = useRouter();
+    const [dragActive, setDragActive] = useState(false);
+
+    const handleFileChange = e => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            console.log("Archivo seleccionado: ", selectedFile.name)
+        }
+    }
+
+    const handleDrop = e => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            console.log("Archivo dropeado:", e.dataTransfer.files[0].name);
+            // Aquí podrías procesarlo igual que con handleFileChange
+        }
+    }
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    };
 
     return (
         <>
             <div className={"droppdf"}>
                 <b className={"unirArchivosPdf"}>Unir archivos PDF</b>
                 <div className={"unePdfY"}>Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!</div>
-                <div className={"drop"}>
-                    <div className={"largebuttonParent"}>
-                        <div className={"largebutton"}>
-                            <div className={"seleccionarArchivosPdf"}>Seleccionar archivos PDF</div>
-                        </div>
-                        <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
-                    </div>
+                <div
+                    className={`drop ${dragActive ? "drag-active" : ""}`}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                >
+                    <label htmlFor="fileInput" className="largebutton">Seleccionar Archivo</label>
+                    <input 
+                        type="file"
+                        id="fileInput"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }} //Ocultar input
+                    />
+                    <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
                 </div>
                 <div className={"navbar"}>
                     <b className={"freepdf"}>FreePDF</b>
@@ -45,5 +84,5 @@ export default function DropPage() {
                 </div>
             </div>;
         </>
-    )    
+    )
 }

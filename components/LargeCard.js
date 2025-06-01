@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function LargeCard({ titulo, descripcion }) {
+export default function LargeCard({ titulo, descripcion, link}) {
     return (
-        <Link href="/attachPDF/drop">
-            <div className="largeCard" style={{ cursor: "pointer", textDecoration: 'none'}}>
+        <Link href={`/tools/${link}`}>
+            <div className="largeCard" style={{ cursor: "pointer", textDecoration: 'none' }}>
                 <Image src="/icono.svg" alt="image-icono" width={30} height={34} />
                 <div className="unirPDFParent">
                     <div className="unirPDF">{titulo}</div>
