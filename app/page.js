@@ -1,3 +1,5 @@
+'use client';
+
 import LargeCard from "@/components/LargeCard";
 import Card from "@/components/Card";
 import Link from "next/link";
@@ -12,7 +14,7 @@ export default function Page() {
     },
     {
       titulo: 'Dividir PDF',
-      descripcion: 'Une PDF y ponlos en el orden que prefieras. !Rápido y fácil!',
+      descripcion: 'Divide PDF y ponlos en el orden que prefieras. !Rápido y fácil!',
       link: 'dividir-pdf',
     },
     {
@@ -132,7 +134,14 @@ export default function Page() {
 
         <div className="seccionBotones">
           <button className="btn btn-azul">Ayúdanos a mantener el proyecto</button>
-          <button className="btn btn-blanco">Explora todas las herramientas</button>
+          <button
+            className="btn btn-blanco"
+            onClick={() => {
+              const destino = document.getElementById('allTools');
+              if (destino) destino.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            Explora todas las herramientas</button>
         </div>
 
         <div className="tituloPDFPopular">
@@ -201,7 +210,7 @@ export default function Page() {
         </div>
 
         <div className="tituloPDFPopular">
-          <div className="textoAllTools">Todas las herramientas de FreePDF</div>
+          <div className="textoAllTools" id="allTools">Todas las herramientas de FreePDF</div>
         </div>
 
         <div className="subtituloPDFPopular">

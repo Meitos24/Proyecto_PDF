@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function LargeCard({ titulo, descripcion, link}) {
     return (
         <Link href={`/tools/${link}`}>
-            <div className="largeCard" style={{ cursor: "pointer", textDecoration: 'none' }}>
+            <div className="largeCard">
                 <Image src="/icono.svg" alt="image-icono" width={30} height={34} />
                 <div className="unirPDFParent">
                     <div className="unirPDF">{titulo}</div>
