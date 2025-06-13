@@ -78,6 +78,7 @@ export default function DropPage() {
                             <span>{` — Hecho con `}</span>
                             <span className={"span"}>💙</span>
                             <span className={"porGenteDe"}>{`️ por gente de internet `}</span>
+                            <button type="button"className="btn btn-primary">boton</button>
                         </span>
                     </div>
                 </div>

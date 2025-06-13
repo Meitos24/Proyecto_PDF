@@ -106,7 +106,95 @@ export default function Page() {
 
   return (
     <>
-      <div className="navbar">
+     
+      <nav className="navbar navbar-expand-lg navbar-dark fixed-top" style={{
+  background: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%)',
+  backdropFilter: 'blur(10px)',
+  borderBottom: '2px solid #161618',
+  zIndex: 1000
+}}>
+  <div className="container-fluid px-3">
+    {/* Brand/Logo */}
+    <a className="navbar-brand fw-bold" href="/" style={{color: '#fff', fontSize: '1.2rem'}}>
+      FreePDF
+    </a>
+
+    {/* Toggle button para móvil */}
+    <button 
+      className="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNav" 
+      aria-controls="navbarNav" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation"
+      style={{borderColor: '#7188ff', color: '#fff'}}
+    >
+      <span className="navbar-toggler-icon"></span>
+    </button>
+
+    {/* Menu colapsible */}
+    <div className="collapse navbar-collapse" id="navbarNav">
+      <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+        <li className="nav-item">
+          <a className="nav-link text-white hover-effect" href="/tools/unir-pdf">
+            Unir PDF
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link text-white hover-effect" href="/tools/dividir-pdf">
+            Dividir PDF
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link text-white hover-effect" href="/tools/comprimir">
+            Comprimir PDF
+          </a>
+        </li>
+        <li className="nav-item">
+          <a className="nav-link text-white hover-effect" href="/tools/convertir">
+            Convertir PDF
+          </a>
+        </li>
+        <li className="nav-item dropdown">
+          <a 
+            className="nav-link dropdown-toggle text-white hover-effect" 
+            href="#" 
+            id="navbarDropdown" 
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+          >
+            Todas las herramientas
+          </a>
+          <ul className="dropdown-menu dropdown-menu-dark" style={{backgroundColor: 'rgba(0,0,0,0.9)'}}>
+            <li><a className="dropdown-item" href="/tools/unir-pdf">Unir PDF</a></li>
+            <li><a className="dropdown-item" href="/tools/dividir-pdf">Dividir PDF</a></li>
+            <li><a className="dropdown-item" href="/tools/comprimir">Comprimir PDF</a></li>
+            <li><a className="dropdown-item" href="/tools/convertir">Convertir PDF</a></li>
+          </ul>
+        </li>
+      </ul>
+      
+      {/* Botón Donar */}
+      <div className="d-flex">
+        <a 
+          className="btn btn-primary rounded-pill px-4" 
+          href="/donar"
+          style={{
+            backgroundColor: '#4c6ef5',
+            borderColor: '#4c6ef5',
+            fontWeight: '600'
+          }}
+        >
+          Donar
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+      {/* <nav className="navbar fixed-top d-flex flex-row align-items-center justify-content-between px-3">
         <b className="freepdf">FreePDF</b>
         <div className="menu">
           <Link href="/tools/unir-pdf" className="unirPdf">Unir PDF</Link>
@@ -118,16 +206,16 @@ export default function Page() {
         <div className="donarParent">
           <Link href="/donar" className="donar">Donar</Link>
         </div>
-      </div>
+      </nav> */}
 
-      <main className="main">
+       <main className="main">
         <div className="tituloPotenciaCreatividad">
-          <b className="textoPotenciaCreatividad">Potencia tu productividad con FreePDFs</b>
+          <b className="textoPotenciaCreatividad">Potencía tu productividad con FreePDFs</b>
         </div>
 
         <div className="subtitulo">
           <p className="subtituloTexto">
-            Herramientas online y completamente gratuitas para unir PDF, separar PDF, comprimir PDF<br></br>
+            <br></br><br></br>Herramientas online y completamente gratuitas para unir PDF, separar PDF, comprimir PDF<br></br>
             convertir documentos Office a PDF, PDF a JPG y JPG  a PDF. No se necesita instalación.
           </p>
         </div>
@@ -150,7 +238,7 @@ export default function Page() {
 
         <div className="subtituloPDFPopular">
           <p className="subtituloTextoPDFPopular">
-            21 herramientas para convertir, comprimir y editar archivos PDF dfe forma gratuita.<br></br>
+            21 herramientas para convertir, comprimir y editar archivos PDF de forma gratuita.<br></br>
             ¡Pruébalo hoy mismo!
           </p>
         </div>
@@ -229,7 +317,7 @@ export default function Page() {
             }
           </div>
         </div>
-      </main>
+      </main> */
     </>
   );
 }
