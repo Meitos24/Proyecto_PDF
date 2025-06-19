@@ -1,40 +1,17 @@
 'use client';
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useFileUpload } from "@/core/hooks/useUploadFile";
 
 export default function DropPage() {
-
     const router = useRouter();
-    const [dragActive, setDragActive] = useState(false);
-
-    const handleFileChange = e => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            console.log("Archivo seleccionado: ", selectedFile.name)
-        }
-    }
-
-    const handleDrop = e => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            console.log("Archivo dropeado:", e.dataTransfer.files[0].name);
-            // Aquí podrías procesarlo igual que con handleFileChange
-        }
-    }
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(true);
-    };
-
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-    };
+    const {
+        file,
+        dragActive,
+        handleFileChange,
+        handleDrop,
+        handleDragOver,
+        handleDragLeave,
+    } = useFileUpload();
 
     return (
         <>
@@ -48,14 +25,16 @@ export default function DropPage() {
                     onDragLeave={handleDragLeave}
                 >
                     <label htmlFor="fileInput" className="largebutton">Seleccionar Archivo</label>
-                    <input 
+                    <input
                         type="file"
                         id="fileInput"
                         onChange={handleFileChange}
-                        style={{ display: 'none' }} //Ocultar input
+                        style={{ display: 'none' }}
                     />
                     <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
+                    {file && <p>Archivo cargado: {file.name}</p>}
                 </div>
+
                 <div className={"navbar"}>
                     <div className={"freepdf"} onClick={() => router.push('/')}>FreePDF</div>
                     <div className={"menu"}>
@@ -69,11 +48,10 @@ export default function DropPage() {
                         <div className={"seleccionarArchivosPdf"}>Donar</div>
                     </div>
                 </div>
+
                 <div className={"footer"}>
                     <div className={"freepdfHechoContainer"}>
-                        <span>
-                            <b>@2025 FreePDF</b>
-                        </span>
+                        <span><b>@2025 FreePDF</b></span>
                         <span className={"hechoConPorGenteDeInte"}>
                             <span>{` — Hecho con `}</span>
                             <span className={"span"}>💙</span>
@@ -81,7 +59,7 @@ export default function DropPage() {
                         </span>
                     </div>
                 </div>
-            </div>;
+            </div>
         </>
-    )
+    );
 }

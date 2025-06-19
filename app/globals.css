@@ -1,4 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import "tailwindcss";
+
 
 * {
   font-family: "Inter", sans-serif !important;
@@ -10,10 +12,11 @@ body {
   background-color: #020205;
 }
 
+
 .main {
-  display: flex;
-  flex-direction: column;
-}
+    display: flex;
+    flex-direction: column;
+  }
 
 .freepdf {
   position: relative;
@@ -113,8 +116,8 @@ body {
 
 .tituloPotenciaCreatividad {
   display: flex;
-  justify-content: center; /* horizontal */
-  align-items: center; /* vertical */
+  justify-content: center; 
+  align-items: center; 
   height: 100px;
   padding-top: 120px;
 }
@@ -131,8 +134,8 @@ body {
 
 .subtitulo {
   display: flex;
-  justify-content: center; /* horizontal */
-  align-items: center; /* vertical */
+  justify-content: center; 
+  align-items: center; 
   height: 100px;
 }
 
@@ -175,20 +178,21 @@ body {
 }
 
 .btn-blanco {
+  background-color: #fff;
   color: #4b68ff;
 }
 
 .btn-blanco:hover {
-  background-color: #4b68ff;
-  color: #ffffff;
+  background-color: #fff;
+  color: #4b68ff;
 }
 
 .tituloPDFPopular {
-  display: flex;
-  justify-content: center; /* horizontal */
-  align-items: center; /* vertical */
+  /* display: flex;
+  justify-content: center; 
+  align-items: center;  */
   height: 100px;
-  border-top: 2px solid #161618;
+  /* border-top: 2px solid #161618; */
 }
 
 .textoPDFPopular {
@@ -199,8 +203,8 @@ body {
 
 .subtituloPDFPopular {
   display: flex;
-  justify-content: center; /* horizontal */
-  align-items: center; /* vertical */
+  justify-content: center; 
+  align-items: center; 
   height: 100px;
   margin-top: -15px;
 }
@@ -230,7 +234,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  width: 60%; /* Aquí defines el 60% */
+  width: 60%; 
   justify-items: center;
 }
 
@@ -421,7 +425,7 @@ body {
 }
 
 .largebutton:hover {
-  background-color: #3a53cc; /* Color más oscuro al hacer hover */
+  background-color: #3a53cc; 
 }
 
 .oArrastraY {
@@ -566,5 +570,26 @@ a {
 }
 
 #allTools {
-  scroll-margin-top: 70px; /* Ajusta según la altura de tu navbar */
+  scroll-margin-top: 70px; 
+} 
+
+
+/* .btn-azul {
+  background-color: #4b68ff;
+  color: #fff;
 }
+
+.btn-azul:hover {
+  background-color: #fff;
+  color: #4b68ff;
+}
+
+.btn-blanco {
+  background-color: #fff;
+  color: #4b68ff;
+}
+
+.btn-blanco:hover {
+  background-color: #4b68ff;
+  color: #fff;
+} */

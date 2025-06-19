@@ -1,4 +1,5 @@
 'use client';
+import { useState } from "react";
 
 import LargeCard from "@/components/LargeCard";
 import Card from "@/components/Card";
@@ -25,132 +26,202 @@ export default function Page() {
     {
       titulo: 'PDF a Word',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'pdf-a-word',
+      link: 'pdf-word',
     },
     {
       titulo: 'PDF a PowerPoint',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'pdf-a-powerpoint'
+      link: 'pdf-powerP'
     },
     {
       titulo: 'PDF a Excel',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'pdf-a-excel'
+      link: 'pdf-Excel'
     },
     {
       titulo: 'Word a PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'word-a-pdf'
+      link: 'Word-pdf'
     },
     {
       titulo: 'PowerPoint a PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'powerpoint-a-pdf'
+      link: 'powerP-pdf'
     },
     {
       titulo: 'Excel a PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'excel-a-pdf'
+      link: 'Excel-pdf'
     },
     {
       titulo: 'Editar PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'editar-pdf'
+      link: 'Editar-pdf'
     },
     {
       titulo: 'PDF a JPG',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'pdf-a-jpg'
+      link: 'pdf-jpg'
     },
     {
       titulo: 'JPG a PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'jpg-a-pdf'
+      link: 'jpg-pdf'
     },
     {
       titulo: 'Firmar PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'firmar-pdf'
+      link: 'pdf-firma'
     },
     {
       titulo: 'Marca de Agua',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'marca-de-agua'
+      link: 'marcaAgua-pdf'
     },
     {
       titulo: 'Rotar PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'rotas-pdf'
+      link: 'rotar-pdf'
     },
     {
       titulo: 'HTML a PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras. ',
-      link: 'html-a-pdf'
+      link: 'Html-pdf'
     },
     {
       titulo: 'Desbloquear PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras.',
-      link: 'desbloquear-pdf'
+      link: 'Desbloquear-pdf'
     },
     {
       titulo: 'Proteger PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras.',
-      link: 'proteger-pdf'
+      link: 'Protege-pdf'
     },
     {
       titulo: 'Ordenar PDF',
       descripcion: 'Une PDF y ponlos en el orden que prefieras.',
-      link: 'ordenar-pdf'
+      link: 'Orden-pdf'
     },
   ]
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <>
-      <div className="navbar">
-        <b className="freepdf">FreePDF</b>
-        <div className="menu">
-          <Link href="/tools/unir-pdf" className="unirPdf">Unir PDF</Link>
-          <Link href="/tools/dividir-pdf" className="unirPdf">Dividir PDF</Link>
-          <Link href="/tools/comprimir" className="unirPdf">Comprimir PDF</Link>
-          <Link href="/tools/convertir" className="unirPdf">Convertir PDF</Link>
-          <Link href="/" className="unirPdf">Todas las herramientas</Link>
-        </div>
-        <div className="donarParent">
-          <Link href="/donar" className="donar">Donar</Link>
-        </div>
-      </div>
+      <nav className="fixed w-full h-[62px] z-[1000] flex items-center justify-between px-5 drop-shadow-md backdrop-blur border-b border-[#161618] text-white text-base font-inter bg-black">
+        {/* <b className="text-xl cursor-pointer translate-y-[20px]">FreePDF</b> */}
+        <b className="text-xl cursor-pointer pt-1">FreePDF</b>
 
-      <main className="main">
-        <div className="tituloPotenciaCreatividad">
-          <b className="textoPotenciaCreatividad">Potencia tu productividad con FreePDFs</b>
+        {/* Botón hamburguesa en móvil */}
+        <div className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>☰</button>
         </div>
 
-        <div className="subtitulo">
-          <p className="subtituloTexto">
-            Herramientas online y completamente gratuitas para unir PDF, separar PDF, comprimir PDF<br></br>
-            convertir documentos Office a PDF, PDF a JPG y JPG  a PDF. No se necesita instalación.
+        {/* Menú en desktop */}
+        <div className="hidden md:flex items-center justify-center gap-5 text-center">
+          <Link href="/tools/unir-pdf">Unir PDF</Link>
+          <Link href="/tools/dividir-pdf">Dividir PDF</Link>
+          <Link href="/tools/comprimir-pdf">Comprimir PDF</Link>
+          <Link href="/tools/convertir">Convertir PDF</Link>
+          <Link href="/">Todas las herramientas</Link>
+        </div>
+
+        {/* Donar */}
+        <div className="hidden md:block">
+          <Link href="/donar">Donar</Link>
+        </div>
+
+        {/* Menú móvil (condicional) */}
+        {menuOpen && (
+          <div className="absolute top-[62px] left-0 w-full bg-black flex flex-col items-center gap-4 py-4 md:hidden">
+            <Link href="/tools/unir-pdf" onClick={() => setMenuOpen(false)}>Unir PDF</Link>
+            <Link href="/tools/dividir-pdf" onClick={() => setMenuOpen(false)}>Dividir PDF</Link>
+            <Link href="/tools/comprimir-pdf" onClick={() => setMenuOpen(false)}>Comprimir PDF</Link>
+            <Link href="/tools/convertir" onClick={() => setMenuOpen(false)}>Convertir PDF</Link>
+            <Link href="/" onClick={() => setMenuOpen(false)}>Todas las herramientas</Link>
+            <Link href="/donar" onClick={() => setMenuOpen(false)}>Donar</Link>
+          </div>
+        )}
+      </nav>
+
+      <main className="flex flex-col px-4 sm:px-6 md:px-8 mt-[62px">
+        {/* Título principal */}
+        <div className="flex justify-center items-center py-10">
+          <b className="tituloPDFPopular text-white font-inter text-2xl sm:text-3xl md:text-4xl text-center sm:text-left max-w-full sm:max-w-[600px] md:max-w-[784px] inline-block">
+            Potencia tu productividad con FreePDFs
+          </b>
+        </div>
+
+        {/* Subtítulo */}
+        <div className="flex justify-center items-center h-[100px]">
+          <p className="text-[#a6a7a9] font-inter text-sm sm:text-base text-center max-w-full sm:max-w-[600px] md:max-w-[776px] mt-[-10px] inline-block px-2">
+            Herramientas online y completamente gratuitas para unir PDF, separar PDF, comprimir PDF<br />
+            convertir documentos Office a PDF, PDF a JPG y JPG a PDF. No se necesita instalación.
           </p>
         </div>
 
-        <div className="seccionBotones">
-          <button className="btn btn-azul">Ayúdanos a mantener el proyecto</button>
+        {/* Botones */}
+        {/* Contenedor centrado */}
+        <div className="flex justify-center"> 
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+            <button className="btn btn-azul w-full sm:w-auto">
+              Ayúdanos a mantener el proyecto
+            </button>
+            <button
+              className="btn btn-blanco w-full sm:w-auto"
+              onClick={() => {
+                const destino = document.getElementById('allTools');
+                if (destino) destino.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Explora todas las herramientas
+            </button>
+          </div>
+        </div>
+
+      </main>
+
+
+
+      {/* <main className="flex flex-col"> */}
+        {/* Título Principal */}
+        {/* <div className="flex justify-center items-center h-[100px pt-[120px">
+          <b className="text-[40px] text-white text-left font-inter w-[784px] inline-block">
+            Potencia tu productividad con FreePDFs
+          </b>
+        </div> */}
+
+        {/* Subtítulo */}
+        {/* <div className="flex justify-center items-center h-[100px]">
+          <p className="w-[776px] text-[18px] text-[#a6a7a9] text-center font-inter mt-[-10px] inline-block">
+            Herramientas online y completamente gratuitas para unir PDF, separar PDF, comprimir PDF<br></br>
+            convertir documentos Office a PDF, PDF a JPG y JPG  a PDF. No se necesita instalación.
+          </p>
+        </div> */}
+
+        {/* Botones */}
+        {/* <div className="flex justify-center gap-5 mb-[60px]">
+          <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
+            Ayúdanos a mantener el proyecto
+          </button>
           <button
-            className="btn btn-blanco"
+            className="px-4 py-2 bg-white text-black border border-gray-300 rounded hover:bg-gray-100 transition-all"
             onClick={() => {
               const destino = document.getElementById('allTools');
               if (destino) destino.scrollIntoView({ behavior: 'smooth' });
             }}
           >
             Explora todas las herramientas</button>
-        </div>
+        </div> */}
 
-        <div className="tituloPDFPopular">
+        {/* <div className="tituloPDFPopular">
           <b className="textoPDFPopular">Herramientas PDF más populares</b>
         </div>
 
         <div className="subtituloPDFPopular">
           <p className="subtituloTextoPDFPopular">
-            21 herramientas para convertir, comprimir y editar archivos PDF dfe forma gratuita.<br></br>
+            21 herramientas para convertir, comprimir y editar archivos PDF de forma gratuita.<br></br>
             ¡Pruébalo hoy mismo!
           </p>
         </div>
@@ -218,18 +289,24 @@ export default function Page() {
             Usa nuestra colección de herramientas PDF para procesar documentos digitalesy facilitar<br></br>
             el flujo de trabajo sin problemas.
           </p>
-        </div>
+        </div> 
 
         <div className="cardSectionWrapper2">
           <div className="cardSection2">
             {
               largeCardArrays.map((card, index) => (
-                <Card key={index} titulo={card.titulo} descripcion={card.descripcion} />
+                <Card
+                  key={index}
+                  titulo={card.titulo}
+                  descripcion={card.descripcion} 
+                  link={card.link}
+                  />
               ))
             }
           </div>
-        </div>
-      </main>
+        </div> */}
+      {/* </main> */}
     </>
   );
-}
+} 
+

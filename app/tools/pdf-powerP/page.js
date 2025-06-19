@@ -8,8 +8,8 @@ export default function DropPage() {
     return (
         <>
             <div className={"droppdf"}>
-                <b className={"unirArchivosPdf"}>convertir archivos PDF a PowerPoint</b>
-                <div className={"unePdfY"}>Convierte tus PDF a PowerPoint y ponlos en el orden que prefieras. ¡Rápido y fácil!</div>
+                <b className={"unirArchivosPdf"}>PDF a PowerPoint</b>
+                <div className={"unePdfY"}>Convierte tus PDF a PowerPoint y ponlos en el orden que prefieras.</div>
                 <div className={"drop"}>
                     <div className={"largebuttonParent"}>
                         <div className={"largebutton"}>

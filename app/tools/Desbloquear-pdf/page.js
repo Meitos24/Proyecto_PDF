@@ -13,7 +13,7 @@ export default function DropPage() {
                 <div className={"drop"}>
                     <div className={"largebuttonParent"}>
                         <div className={"largebutton"}>
-                            <div className={"seleccionarArchivosPdf"}>Seleccionar archivos PDF</div>
+                            <div className={"seleccionarArchivosPdf"}>Seleccionar archivos</div>
                         </div>
                         <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
                     </div>
