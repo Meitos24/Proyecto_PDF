@@ -1,0 +1,6 @@
+@API_PDFs_HostAddress = http://localhost:5063
+
+GET {{API_PDFs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
