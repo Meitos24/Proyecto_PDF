@@ -107,11 +107,16 @@ export default function Page() {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const goToAllTools = (e) => {
+    e.preventDefault();
+    const destino = document.getElementById('allTools');
+    if (destino) destino.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
     <>
       <nav className="fixed w-full h-[62px] z-[1000] flex items-center justify-between px-5 drop-shadow-md backdrop-blur border-b border-[#161618] text-white text-base font-inter bg-black">
-        {/* <b className="text-xl cursor-pointer translate-y-[20px]">FreePDF</b> */}
-        <b className="text-xl cursor-pointer pt-1">FreePDF</b>
+        <b className="texto-freepdf text-xl cursor-pointer pt-1">FreePDF</b>
 
         {/* Botón hamburguesa en móvil */}
         <div className="md:hidden">
@@ -120,11 +125,16 @@ export default function Page() {
 
         {/* Menú en desktop */}
         <div className="hidden md:flex items-center justify-center gap-5 text-center">
-          <Link href="/tools/unir-pdf">Unir PDF</Link>
-          <Link href="/tools/dividir-pdf">Dividir PDF</Link>
-          <Link href="/tools/comprimir-pdf">Comprimir PDF</Link>
-          <Link href="/tools/convertir">Convertir PDF</Link>
-          <Link href="/">Todas las herramientas</Link>
+          <Link href="/tools/unir-pdf" className="link-navbar">Unir PDF</Link>
+          <Link href="/tools/dividir-pdf" className="link-navbar">Dividir PDF</Link>
+          <Link href="/tools/comprimir-pdf" className="link-navbar">Comprimir PDF</Link>
+          <Link href="/tools/convertir" className="link-navbar">Convertir PDF</Link>
+          <Link href={'/'}
+            className="link-navbar"
+            onClick={goToAllTools}
+          >
+            Todas las herramientas
+          </Link>
         </div>
 
         {/* Donar */}
@@ -169,10 +179,7 @@ export default function Page() {
             </button>
             <button
               className="btn btn-blanco w-full sm:w-auto"
-              onClick={() => {
-                const destino = document.getElementById('allTools');
-                if (destino) destino.scrollIntoView({ behavior: 'smooth' });
-              }}
+              onClick={goToAllTools}
             >
               Explora todas las herramientas
             </button>

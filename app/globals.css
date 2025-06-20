@@ -183,8 +183,8 @@ body {
 }
 
 .btn-blanco:hover {
-  background-color: #fff;
-  color: #4b68ff;
+  background-color: #4b68ff;
+  color: #fff;
 }
 
 .tituloPDFPopular {
@@ -641,3 +641,12 @@ a {
 .borde-prueba {
   margin-top: 30px;
 }
+
+.link-navbar:hover {
+  color: #4b68ff;
+}
+
+.texto-freepdf:hover {
+  color: #a6a7a9;
+}
+
