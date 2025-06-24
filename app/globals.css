@@ -389,16 +389,16 @@ body {
   text-decoration: none;
 }
 
-.unirArchivosPdf {
+/* .unirArchivosPdf {
   position: absolute;
   top: 107px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 40px;
   text-align: center;
-}
+} */
 
-.unePdfY {
+/* .unePdfY {
   position: absolute;
   top: 177px;
   left: 50%;
@@ -406,7 +406,7 @@ body {
   font-size: 18px;
   color: #a6a7a9;
   text-align: center;
-}
+} */
 
 .seleccionarArchivosPdf {
   position: relative;
@@ -414,13 +414,8 @@ body {
 }
 
 .largebutton {
-  align-self: stretch;
   border-radius: 5px;
   background-color: #4b68ff;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
 }
 
@@ -428,7 +423,7 @@ body {
   background-color: #3a53cc; 
 }
 
-.oArrastraY {
+/* .oArrastraY {
   align-self: stretch;
   position: relative;
   font-size: 16px;
@@ -436,7 +431,7 @@ body {
   color: #a6a7a9;
   text-align: center;
   margin-top: 20px;
-}
+} */
 
 .largebuttonParent {
   display: flex;
@@ -446,21 +441,21 @@ body {
   gap: 10px;
 }
 
-.drop {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 20px;
-  border: 5px dashed #fff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 200px;
-  font-size: 24px;
-}
+/* .drop { */
+  /* position: absolute; */
+  /* top: 50%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  /* border-radius: 20px; */
+  /* border: 5px dashed #fff; */
+  /* overflow: hidden; */
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  /* padding: 100px 200px; */
+  /* font-size: 24px; */
+/* } */
 
 .drop.drag-active {
   background-color: rgba(255, 255, 255, 0.1);
@@ -552,7 +547,7 @@ body {
   box-sizing: border-box;
 }
 
-.droppdf {
+/* .droppdf {
   width: 100%;
   position: relative;
   background-color: #020205;
@@ -562,7 +557,7 @@ body {
   font-size: 16px;
   color: #fff;
   font-family: Inter;
-}
+} */
 
 a {
   text-decoration: none;
@@ -650,3 +645,15 @@ a {
   color: #a6a7a9;
 }
 
+.texto-tools {
+  margin-top: 30px;
+}
+
+.titulo-tools {
+  margin-top: 80px;
+}
+
+.borde-archivos {
+  margin-top: 15px;
+  padding: 4rem;
+}
