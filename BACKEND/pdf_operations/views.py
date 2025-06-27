@@ -8,14 +8,18 @@ from rest_framework.response import Response
 
 from .models import PDFOperation
 from .serializers import (
+    ImagesToPDFSerializer,
     MergePDFSerializer,
     PDFOperationResultSerializer,
     PDFOperationSerializer,
     PDFSplitInfoSerializer,
+    PDFToImagesSerializer,
     SplitPDFSerializer,
     SplitValidationSerializer,
 )
 from .utils import (
+    convert_images_to_pdf,
+    convert_pdf_to_images,
     get_pdf_split_info,
     merge_pdf_files,
     split_pdf_by_pages,
@@ -40,6 +44,18 @@ def pdf_operations_info(request):
                     "description": "Merge multiple PDF files into one",
                     "status": "available",
                 },
+                "pdf_to_images": {
+                    "endpoint": "/api/pdf/convert/pdf-to-images/",
+                    "method": "POST",
+                    "description": "Convert PDF pages to images (PNG, JPEG, WEBP, TIFF)",
+                    "status": "available",
+                },
+                "images_to_pdf": {
+                    "endpoint": "/api/pdf/convert/images-to-pdf/",
+                    "method": "POST",
+                    "description": "Convert multiple images to a single PDF",
+                    "status": "available",
+                },
                 "split": {
                     "endpoint": "/api/pdf/split/",
                     "method": "POST",
@@ -52,18 +68,23 @@ def pdf_operations_info(request):
                     "description": "Compress PDF file size",
                     "status": "coming_soon",
                 },
-                "convert": {
-                    "endpoint": "/api/pdf/convert/",
-                    "method": "POST",
-                    "description": "Convert PDFs to images or images to PDF",
-                    "status": "coming_soon",
-                },
             },
             "limits": {
                 "max_file_size_mb": 200,
                 "max_files_per_merge": 20,
                 "max_total_pages": 5000,
                 "max_total_size_mb": 500,
+                "max_pages_per_conversion": 100,
+                "max_images_per_pdf": 50,
+                "supported_image_formats": [
+                    "JPEG",
+                    "PNG",
+                    "GIF",
+                    "BMP",
+                    "TIFF",
+                    "WEBP",
+                ],
+                "supported_output_formats": ["PNG", "JPEG", "WEBP", "TIFF"],
             },
         }
     )
@@ -474,6 +495,239 @@ def validate_split(request):
 
     except Exception as e:
         logger.error(f"Error validating split: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Validation error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def pdf_to_images(request):
+    """Convert PDF to images"""
+    try:
+        serializer = PDFToImagesSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        validated_data = serializer.validated_data
+        file_id = validated_data["file_id"]
+        output_format = validated_data["output_format"]
+        quality = validated_data["quality"]
+        dpi = validated_data["dpi"]
+        output_filename = validated_data.get("output_filename")
+
+        # Handle page range
+        pages_range = None
+        if validated_data.get("start_page") and validated_data.get("end_page"):
+            pages_range = (validated_data["start_page"], validated_data["end_page"])
+
+        # Create operation record
+        operation = PDFOperation.objects.create(
+            operation_type="convert_to_image",
+            input_files=[str(file_id)],
+            parameters={
+                "output_format": output_format,
+                "quality": quality,
+                "dpi": dpi,
+                "pages_range": pages_range,
+                "output_filename": output_filename,
+            },
+        )
+
+        try:
+            operation.mark_as_processing()
+
+            # Perform the conversion
+            converted_file = convert_pdf_to_images(
+                file_id=file_id,
+                output_format=output_format,
+                quality=quality,
+                dpi=dpi,
+                output_filename=output_filename,
+                pages_range=pages_range,
+            )
+
+            operation.mark_as_completed(str(converted_file.id))
+
+            return Response(
+                {
+                    "success": True,
+                    "message": f"Successfully converted PDF to {output_format} images",
+                    "operation": {
+                        "id": operation.id,
+                        "status": operation.status,
+                        "output_file_id": converted_file.id,
+                        "download_url": request.build_absolute_uri(
+                            f"/api/files/download/{converted_file.id}/"
+                        ),
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as ve:
+            operation.mark_as_failed(str(ve))
+            return Response(
+                {"success": False, "message": str(ve), "operation_id": operation.id},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            operation.mark_as_failed(str(e))
+            logger.error(f"Error converting PDF to images: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Error processing PDF: {str(e)}",
+                    "operation_id": operation.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in pdf_to_images: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def images_to_pdf(request):
+    """Convert images to PDF"""
+    try:
+        serializer = ImagesToPDFSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        validated_data = serializer.validated_data
+        file_ids = validated_data["file_ids"]
+        output_filename = validated_data["output_filename"]
+        page_size = validated_data["page_size"]
+        orientation = validated_data["orientation"]
+
+        # Create operation record
+        operation = PDFOperation.objects.create(
+            operation_type="convert_from_image",
+            input_files=[str(fid) for fid in file_ids],
+            parameters={
+                "output_filename": output_filename,
+                "page_size": page_size,
+                "orientation": orientation,
+                "file_count": len(file_ids),
+            },
+        )
+
+        try:
+            operation.mark_as_processing()
+
+            # Perform the conversion
+            converted_file = convert_images_to_pdf(
+                file_ids=file_ids,
+                output_filename=output_filename,
+                page_size=page_size,
+                orientation=orientation,
+            )
+
+            operation.mark_as_completed(str(converted_file.id))
+
+            return Response(
+                {
+                    "success": True,
+                    "message": f"Successfully converted {len(file_ids)} images to PDF",
+                    "operation": {
+                        "id": operation.id,
+                        "status": operation.status,
+                        "output_file_id": converted_file.id,
+                        "download_url": request.build_absolute_uri(
+                            f"/api/files/download/{converted_file.id}/"
+                        ),
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as ve:
+            operation.mark_as_failed(str(ve))
+            return Response(
+                {"success": False, "message": str(ve), "operation_id": operation.id},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            operation.mark_as_failed(str(e))
+            logger.error(f"Error converting images to PDF: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Error processing images: {str(e)}",
+                    "operation_id": operation.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in images_to_pdf: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def validate_pdf_conversion(request):
+    """Validate PDF before converting to images"""
+    try:
+        file_id = request.data.get("file_id")
+        start_page = request.data.get("start_page")
+        end_page = request.data.get("end_page")
+
+        if not file_id:
+            return Response(
+                {"success": False, "message": "file_id is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        pages_range = None
+        if start_page and end_page:
+            pages_range = (start_page, end_page)
+
+        validation_result = validate_pdf_to_images_operation(file_id, pages_range)
+
+        if validation_result["valid"]:
+            return Response(
+                {
+                    "success": True,
+                    "message": "PDF is valid for conversion",
+                    "validation": validation_result,
+                }
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": validation_result["error"],
+                    "validation": validation_result,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    except Exception as e:
+        logger.error(f"Error validating PDF conversion: {str(e)}")
         return Response(
             {"success": False, "message": f"Validation error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,

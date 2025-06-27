@@ -166,3 +166,84 @@ class SplitValidationSerializer(serializers.Serializer):
     )
     ranges = PageRangeSerializer(many=True, required=False)
     pages_per_split = serializers.IntegerField(min_value=1, required=False)
+
+
+class PDFToImagesSerializer(serializers.Serializer):
+    """Serializer for PDF to images conversion"""
+
+    file_id = serializers.UUIDField(help_text="UUID of the PDF file to convert")
+    output_format = serializers.ChoiceField(
+        choices=["PNG", "JPEG", "WEBP", "TIFF"],
+        default="PNG",
+        help_text="Output image format",
+    )
+    quality = serializers.IntegerField(
+        min_value=1,
+        max_value=100,
+        default=95,
+        help_text="Image quality for JPEG/WEBP (1-100)",
+    )
+    dpi = serializers.IntegerField(
+        min_value=72, max_value=300, default=150, help_text="Resolution in DPI (72-300)"
+    )
+    output_filename = serializers.CharField(
+        max_length=255, required=False, help_text="Base name for output ZIP file"
+    )
+    start_page = serializers.IntegerField(
+        min_value=1, required=False, help_text="Starting page number (1-based)"
+    )
+    end_page = serializers.IntegerField(
+        min_value=1, required=False, help_text="Ending page number (1-based)"
+    )
+
+    def validate(self, data):
+        """Validate page range if provided"""
+        start_page = data.get("start_page")
+        end_page = data.get("end_page")
+
+        if start_page and end_page:
+            if start_page > end_page:
+                raise serializers.ValidationError(
+                    "start_page must be less than or equal to end_page"
+                )
+        elif start_page and not end_page:
+            raise serializers.ValidationError(
+                "end_page is required when start_page is provided"
+            )
+        elif end_page and not start_page:
+            raise serializers.ValidationError(
+                "start_page is required when end_page is provided"
+            )
+
+        return data
+
+
+class ImagesToPDFSerializer(serializers.Serializer):
+    """Serializer for images to PDF conversion"""
+
+    file_ids = serializers.ListField(
+        child=serializers.UUIDField(),
+        min_length=1,
+        max_length=50,
+        help_text="List of image file UUIDs to convert",
+    )
+    output_filename = serializers.CharField(
+        max_length=255,
+        default="images_to_pdf.pdf",
+        help_text="Name for the output PDF file",
+    )
+    page_size = serializers.ChoiceField(
+        choices=["A4", "A3", "A5", "Letter", "Legal"],
+        default="A4",
+        help_text="Page size for the PDF",
+    )
+    orientation = serializers.ChoiceField(
+        choices=["portrait", "landscape"],
+        default="portrait",
+        help_text="Page orientation",
+    )
+
+    def validate_output_filename(self, value):
+        if not value.lower().endswith(".pdf"):
+            value += ".pdf"
+        return value

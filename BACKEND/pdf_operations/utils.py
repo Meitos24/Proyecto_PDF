@@ -3,9 +3,11 @@ import os
 import zipfile
 from io import BytesIO
 
+import fitz  # PyMuPDF
 from django.core.files.base import ContentFile
 from file_manager.models import TemporaryFile
 from file_manager.utils import create_download_file
+from PIL import Image
 from PyPDF2 import PdfReader, PdfWriter
 
 
@@ -454,4 +456,273 @@ def validate_split_operation(file_id, split_options):
         }
 
     except Exception as e:
+        return {"valid": False, "error": str(e)}
+
+
+import zipfile
+
+import fitz  # PyMuPDF
+from PIL import Image
+
+
+def validate_image_files(file_ids):
+    """
+    Validate that all file IDs exist, are images, and are not expired
+    Returns list of TemporaryFile objects or raises ValueError
+    """
+    files = []
+    allowed_image_types = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/bmp",
+        "image/tiff",
+        "image/webp",
+    ]
+
+    for file_id in file_ids:
+        try:
+            temp_file = TemporaryFile.objects.get(id=file_id)
+        except TemporaryFile.DoesNotExist:
+            raise ValueError(f"File with ID {file_id} not found")
+
+        if temp_file.is_expired:
+            raise ValueError(f"File {temp_file.original_filename} has expired")
+
+        if not temp_file.file_exists:
+            raise ValueError(
+                f"Physical file {temp_file.original_filename} not found on storage"
+            )
+
+        if temp_file.mime_type not in allowed_image_types:
+            raise ValueError(
+                f"File {temp_file.original_filename} is not a supported image (type: {temp_file.mime_type})"
+            )
+
+        files.append(temp_file)
+    return files
+
+
+def convert_pdf_to_images(
+    file_id,
+    output_format="PNG",
+    quality=95,
+    dpi=150,
+    output_filename=None,
+    pages_range=None,
+):
+    """
+    Convert PDF pages to images
+
+    Args:
+        file_id: UUID of the PDF file
+        output_format: Image format (PNG, JPEG, WEBP, TIFF)
+        quality: Image quality for JPEG (1-100)
+        dpi: Resolution in DPI
+        output_filename: Base name for output files
+        pages_range: Tuple (start, end) for page range, None for all pages
+
+    Returns:
+        TemporaryFile object of the ZIP file containing images
+    """
+
+    pdf_files = validate_pdf_files([file_id])
+    pdf_file = pdf_files[0]
+
+    if not output_filename:
+        base_name = os.path.splitext(pdf_file.original_filename)[0]
+        output_filename = f"{base_name}_images.zip"
+
+    try:
+        pdf_document = fitz.open(pdf_file.full_file_path)
+        total_pages = len(pdf_document)
+
+        if pages_range:
+            start_page, end_page = pages_range
+            start_page = max(0, start_page - 1)
+            end_page = min(total_pages, end_page)
+        else:
+            start_page = 0
+            end_page = total_pages
+
+        if start_page >= end_page:
+            raise ValueError("Invalid page range")
+
+        zip_buffer = io.BytesIO()
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for page_num in range(start_page, end_page):
+                page = pdf_document[page_num]
+
+                mat = fitz.Matrix(dpi / 72, dpi / 72)
+                pix = page.get_pixmap(matrix=mat)
+
+                img_data = pix.tobytes("png")
+                image = Image.open(io.BytesIO(img_data))
+
+                img_buffer = io.BytesIO()
+
+                if output_format.upper() == "JPEG":
+                    if image.mode == "RGBA":
+                        background = Image.new("RGB", image.size, (255, 255, 255))
+                        background.paste(image, mask=image.split()[-1])
+                        image = background
+                    image.save(
+                        img_buffer, format="JPEG", quality=quality, optimize=True
+                    )
+                    file_ext = "jpg"
+                elif output_format.upper() == "PNG":
+                    image.save(img_buffer, format="PNG", optimize=True)
+                    file_ext = "png"
+                elif output_format.upper() == "WEBP":
+                    image.save(
+                        img_buffer, format="WEBP", quality=quality, optimize=True
+                    )
+                    file_ext = "webp"
+                elif output_format.upper() == "TIFF":
+                    image.save(img_buffer, format="TIFF", optimize=True)
+                    file_ext = "tiff"
+                else:
+                    raise ValueError(f"Unsupported output format: {output_format}")
+
+                img_filename = f"page_{page_num + 1:03d}.{file_ext}"
+                zip_file.writestr(img_filename, img_buffer.getvalue())
+
+        pdf_document.close()
+
+        zip_buffer.seek(0)
+        converted_file = create_download_file(
+            file_content=zip_buffer.getvalue(), filename=output_filename
+        )
+
+        return converted_file
+
+    except Exception as e:
+        raise Exception(f"Failed to convert PDF to images: {str(e)}")
+
+
+def convert_images_to_pdf(
+    file_ids,
+    output_filename="images_to_pdf.pdf",
+    page_size="A4",
+    orientation="portrait",
+):
+    """
+    Convert multiple images to a single PDF
+
+    Args:
+        file_ids: List of image file UUIDs
+        output_filename: Name for the output PDF
+        page_size: Page size (A4, A3, Letter, etc.)
+        orientation: portrait or landscape
+
+    Returns:
+        TemporaryFile object of the created PDF
+    """
+
+    image_files = validate_image_files(file_ids)
+
+    try:
+        page_sizes = {
+            "A4": (595, 842),
+            "A3": (842, 1191),
+            "A5": (420, 595),
+            "Letter": (612, 792),
+            "Legal": (612, 1008),
+        }
+
+        if page_size not in page_sizes:
+            raise ValueError(f"Unsupported page size: {page_size}")
+
+        page_width, page_height = page_sizes[page_size]
+
+        if orientation.lower() == "landscape":
+            page_width, page_height = page_height, page_width
+
+        pdf_buffer = io.BytesIO()
+        pdf_images = []
+
+        for temp_file in image_files:
+            image = Image.open(temp_file.full_file_path)
+
+            if image.mode != "RGB":
+                image = image.convert("RGB")
+
+            img_width, img_height = image.size
+
+            scale_x = (page_width - 40) / img_width
+            scale_y = (page_height - 40) / img_height
+            scale = min(scale_x, scale_y)
+
+            if scale < 1:
+                new_width = int(img_width * scale)
+                new_height = int(img_height * scale)
+                image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+            pdf_images.append(image)
+
+        if pdf_images:
+            first_image = pdf_images[0]
+            other_images = pdf_images[1:] if len(pdf_images) > 1 else []
+
+            first_image.save(
+                pdf_buffer,
+                format="PDF",
+                save_all=True,
+                append_images=other_images,
+                resolution=150.0,
+            )
+
+        pdf_buffer.seek(0)
+        converted_file = create_download_file(
+            file_content=pdf_buffer.getvalue(), filename=output_filename
+        )
+
+        return converted_file
+
+    except Exception as e:
+        raise Exception(f"Failed to convert images to PDF: {str(e)}")
+
+
+def validate_pdf_to_images_operation(file_id, pages_range=None):
+    """
+    Validate that a PDF to images conversion can be performed
+    """
+    try:
+        pdf_files = validate_pdf_files([file_id])
+        pdf_file = pdf_files[0]
+
+        file_info = get_pdf_info(pdf_file)
+
+        if "error" in file_info:
+            raise ValueError(f"Cannot read PDF: {file_info['error']}")
+
+        total_pages = file_info["pages"]
+
+        if pages_range:
+            start_page, end_page = pages_range
+            if start_page < 1 or end_page > total_pages or start_page > end_page:
+                raise ValueError(
+                    f"Invalid page range {start_page}-{end_page}. PDF has {total_pages} pages."
+                )
+            pages_to_convert = end_page - start_page + 1
+        else:
+            pages_to_convert = total_pages
+
+        if pages_to_convert > 100:
+            raise ValueError(
+                f"Cannot convert more than 100 pages at once (requested: {pages_to_convert})"
+            )
+
+        estimated_size_mb = pages_to_convert * 0.5
+
+        return {
+            "valid": True,
+            "file_info": file_info,
+            "pages_to_convert": pages_to_convert,
+            "estimated_output_size_mb": round(estimated_size_mb, 2),
+        }
+
+    except (ValueError, Exception) as e:
         return {"valid": False, "error": str(e)}
