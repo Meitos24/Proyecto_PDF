@@ -11,6 +11,7 @@ urlpatterns = [
     path("split/info/", views.get_pdf_info, name="get_pdf_info"),
     path("split/validate/", views.validate_split, name="validate_split"),
     # PDF to Images conversion
+    path("convert/images-to-pdf/", views.images_to_pdf, name="images_to_pdf"),
     path("convert/pdf-to-images/", views.pdf_to_images, name="pdf_to_images"),
     path(
         "convert/pdf-to-images/validate/",
