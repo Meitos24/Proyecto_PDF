@@ -37,7 +37,7 @@ class FileUploadSerializer(serializers.Serializer):
     def validate_file(self, value):
         """Validate uploaded file"""
         # Check file size (50MB limit)
-        max_size = 50 * 1024 * 1024  # 50MB
+        max_size = 200 * 1024 * 1024  # 50MB
         if value.size > max_size:
             raise serializers.ValidationError("File size cannot exceed 50MB")
 

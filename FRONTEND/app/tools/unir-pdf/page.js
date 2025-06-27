@@ -2,148 +2,178 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useFileUpload } from "@/core/hooks/useUploadFile";
+import FileList from "@/components/FileList";
+import MergeProcessor from "@/components/MergeProcessor";
+import Navbar from "@/components/Navbar";
 
 export default function DropPage() {
     const router = useRouter();
-
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const {
-        file,
+        files,
         dragActive,
+        uploading,
+        error,
         handleFileChange,
         handleDrop,
         handleDragOver,
         handleDragLeave,
+        removeFile,
+        clearAllFiles,
+        reorderFiles
     } = useFileUpload();
+
+    const handleMergeComplete = (result) => {
+        setSuccessMessage('');
+        setErrorMessage('');
+        // Don't show the top success message anymore
+    };
+
+    const handleMergeError = (error) => {
+        setErrorMessage(error);
+        setSuccessMessage('');
+    };
+
+    const clearMessages = () => {
+        setSuccessMessage('');
+        setErrorMessage('');
+    };
 
     return (
         <>
-            {/* <div className={"droppdf"}>
-                <b className={"unirArchivosPdf"}>Unir archivos PDF</b>
-                <div className={"unePdfY"}>Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!</div>
+            {/* Use the Navbar component */}
+            <Navbar />
+
+            <div className="w-full relative bg-[#020205] text-white font-inter px-4 py-4 flex flex-col items-center min-h-screen">
+                <b className="titulo-tools text-3xl sm:text-4xl text-center mb-2">
+                    Unir archivos PDF
+                </b>
+
+                <p className="texto-tools text-base sm:text-lg text-[#a6a7a9] text-center max-w-xl mb-12">
+                    Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!
+                </p>
+
+                {/* Error/Success Messages */}
+                {errorMessage && (
+                    <div className="w-full max-w-md mb-8 bg-red-900/30 border border-red-500/50 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <span className="text-red-400 text-xl">×</span>
+                                <p className="text-red-400 text-sm">{errorMessage}</p>
+                            </div>
+                            <button
+                                onClick={clearMessages}
+                                className="text-red-400 hover:text-red-300"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {successMessage && (
+                    <div className="w-full max-w-md mb-8 bg-[#1e3a8a]/30 border border-[#3b82f6]/50 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <p className="text-[#3b82f6] text-sm">{successMessage}</p>
+                            </div>
+                            <button
+                                onClick={clearMessages}
+                                className="text-[#3b82f6] hover:text-[#2563eb]"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Upload Error */}
+                {error && (
+                    <div className="w-full max-w-md mb-8 bg-orange-900/30 border border-orange-500/50 rounded-lg p-4">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-orange-400 text-xl">!</span>
+                            <p className="text-orange-400 text-sm">{error}</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* File Upload Area */}
                 <div
-                    className={`drop ${dragActive ? "drag-active" : ""}`}
+                    className={`borde-archivos w-full max-w-md border-4 border-dashed rounded-2xl ${dragActive ? "bg-[#111] border-[#4b68ff]" : "bg-transparent border-white"
+                        } p-12 flex flex-col items-center justify-center space-y-6 transition-all ${uploading ? 'opacity-50 pointer-events-none' : ''
+                        }`}
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                 >
-                    <label htmlFor="fileInput" className="largebutton">Seleccionar Archivo</label>
-                    <input
-                        type="file"
-                        id="fileInput"
-                        onChange={handleFileChange}
-                        style={{ display: 'none' }}
-                    />
-                    <div className={"oArrastraY"}>o arrastra y suelta los PDF aquí</div>
-                    {file && <p>Archivo cargado: {file.name}</p>}
-                </div>
-
-                <div className={"navbar"}>
-                    <div className={"freepdf"} onClick={() => router.push('/')}>FreePDF</div>
-                    <div className={"menu"}>
-                        <div className={"unirPdf"}>Unir PDF</div>
-                        <div className={"unirPdf"}>Dividir PDF</div>
-                        <div className={"unirPdf"}>Comprimir PDF</div>
-                        <div className={"unirPdf"}>Convertir PDF</div>
-                        <div className={"unirPdf"} onClick={() => router.push('/')}>Todas las herramientas</div>
-                    </div>
-                    <div className={"donarParent"}>
-                        <div className={"seleccionarArchivosPdf"}>Donar</div>
-                    </div>
-                </div>
-
-                <div className={"footer"}>
-                    <div className={"freepdfHechoContainer"}>
-                        <span><b>@2025 FreePDF</b></span>
-                        <span className={"hechoConPorGenteDeInte"}>
-                            <span>{` — Hecho con `}</span>
-                            <span className={"span"}>💙</span>
-                            <span className={"porGenteDe"}>{`️ por gente de internet `}</span>
-                        </span>
-                    </div>
-                </div>
-            </div> */}
-            <div className="w-full relative bg-[#020205] text-white font-inter px-4 py-20 flex flex-col items-center">
-                <b className="titulo-tools text-3xl sm:text-4xl text-center mb-4">
-                    Unir archivos PDF
-                </b>
-
-                <p className="texto-tools text-base sm:text-lg text-[#a6a7a9] text-center max-w-xl mb-10">
-                    Une PDF y ponlos en el orden que prefieras. ¡Rápido y fácil!
-                </p>
-
-                <div
-                    className={`borde-archivos w-full max-w-md border-4 border-dashed rounded-2xl ${dragActive ? "bg-[#111] border-[#4b68ff]" : "bg-transparent border-white"
-                        } p-10 flex flex-col items-center justify-center space-y-5 transition-all`}
-                >
                     <label
                         htmlFor="fileInput"
-                        className="largebutton bg-[#4b68ff] hover:bg-[#3b55d6] text-white font-semibold py-4 px-6 rounded cursor-pointer w-full text-center transition"
+                        className={`largebutton bg-[#4b68ff] hover:bg-[#3b55d6] text-white font-semibold py-4 px-6 rounded cursor-pointer w-full text-center transition ${uploading ? 'cursor-not-allowed' : ''
+                            }`}
                     >
-                        Seleccionar Archivo
+                        {uploading ? (
+                            <div className="flex items-center justify-center space-x-2">
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                <span>Subiendo...</span>
+                            </div>
+                        ) : (
+                            'Seleccionar Archivos PDF'
+                        )}
                     </label>
 
                     <input
                         type="file"
                         id="fileInput"
+                        multiple
+                        accept=".pdf,application/pdf"
                         onChange={handleFileChange}
                         className="hidden"
+                        disabled={uploading}
                     />
 
                     <p className="text-[#a6a7a9] font-medium text-center">
                         o arrastra y suelta los PDF aquí
                     </p>
 
-                    {file && (
+                    {files.length > 0 && (
                         <p className="text-sm text-center text-white">
-                            Archivo cargado: {file.name}
+                            {files.length} archivo{files.length > 1 ? 's' : ''} cargado{files.length > 1 ? 's' : ''}
                         </p>
                     )}
                 </div>
 
+                {/* File List */}
+                <FileList
+                    files={files}
+                    onRemoveFile={removeFile}
+                    onReorderFiles={reorderFiles}
+                    showReorder={true}
+                />
 
-
-                {/* NAVBAR RESPONSIVE */}
-                <div className="fixed w-full h-[62px] z-[1000] flex items-center justify-between px-5 drop-shadow-md backdrop-blur border-b border-[#161618] text-white text-base font-inter bg-black">
-                    {/* Logo */}
-                    <div className="text-lg font-inter text-white cursor-pointer" onClick={() => router.push('/')}>
-                        FreePDF
-                    </div>
-
-                    {/* Botón hamburguesa visible solo en móvil */}
-                    <div className="md:hidden">
-                        <button onClick={() => setMenuOpen(!menuOpen)} className="text-2xl">☰</button>
-                    </div>
-
-                    {/* Menú en desktop */}
-                    <div className="hidden md:flex items-center gap-5">
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => router.push('/tools/unir-pdf')}>Unir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => router.push('/tools/dividir-pdf')}>Dividir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => router.push('/tools/comprimir-pdf')}>Comprimir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => router.push('/tools/convertir')}>Convertir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => router.push('/')}>Todas las herramientas</div>
-                    </div>
-
-                    {/* Donar */}
-                    <div className="hidden md:flex bg-[#4b68ff] rounded-[10px] px-5 py-2 cursor-pointer hover:bg-[#3c56d4] transition" onClick={() => router.push('/donar')}>
-                        <div className="font-semibold text-white">Donar</div>
-                    </div>
-                </div>
-
-                {/* Menú en móviles (condicional) */}
-                {menuOpen && (
-                    <div className="md:hidden absolute top-[62px] left-0 w-full bg-black flex flex-col items-center gap-4 py-4 z-[999]">
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => { router.push('/tools/unir-pdf'); setMenuOpen(false); }}>Unir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => { router.push('/tools/dividir-pdf'); setMenuOpen(false); }}>Dividir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => { router.push('/tools/comprimir-pdf'); setMenuOpen(false); }}>Comprimir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => { router.push('/tools/convertir'); setMenuOpen(false); }}>Convertir PDF</div>
-                        <div className="cursor-pointer hover:text-[#4b68ff]" onClick={() => { router.push('/'); setMenuOpen(false); }}>Todas las herramientas</div>
-                        <div className="cursor-pointer text-[#4b68ff] font-semibold" onClick={() => { router.push('/donar'); setMenuOpen(false); }}>Donar</div>
-                    </div>
+                {/* Merge Processor */}
+                {files.length > 0 && (
+                    <MergeProcessor
+                        files={files}
+                        onMergeComplete={handleMergeComplete}
+                        onMergeError={handleMergeError}
+                    />
                 )}
 
-
+                {/* Help Text */}
+                {files.length === 0 && (
+                    <div className="mt-8 text-center max-w-md">
+                        <h3 className="text-white font-semibold mb-3">¿Cómo combinar PDFs?</h3>
+                        <div className="space-y-2 text-[#a6a7a9] text-sm">
+                            <p>1. Selecciona o arrastra tus archivos PDF</p>
+                            <p>2. Reordena los archivos si es necesario</p>
+                            <p>3. Personaliza el nombre del archivo final</p>
+                            <p>4. Haz clic en "Combinar PDFs"</p>
+                            <p>5. Descarga tu PDF combinado</p>
+                        </div>
+                    </div>
+                )}
             </div>
         </>
     );

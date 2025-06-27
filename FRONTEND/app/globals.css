@@ -1,9 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "tailwindcss";
 
-
 * {
   font-family: "Inter", sans-serif !important;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+figure,
+figcaption,
+blockquote,
+dl,
+dd {
   margin: 0;
   padding: 0;
 }
@@ -11,7 +28,6 @@
 body {
   background-color: #020205;
 }
-
 
 /* .main {
     display: flex;
@@ -116,8 +132,8 @@ body {
 
 .tituloPotenciaCreatividad {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   height: 100px;
   padding-top: 120px;
 }
@@ -134,8 +150,8 @@ body {
 
 .subtitulo {
   display: flex;
-  justify-content: center; 
-  align-items: center; 
+  justify-content: center;
+  align-items: center;
   height: 100px;
 }
 
@@ -420,7 +436,7 @@ body {
 }
 
 .largebutton:hover {
-  background-color: #3a53cc; 
+  background-color: #3a53cc;
 }
 
 /* .oArrastraY {
@@ -442,19 +458,19 @@ body {
 }
 
 /* .drop { */
-  /* position: absolute; */
-  /* top: 50%; */
-  /* left: 50%; */
-  /* transform: translate(-50%, -50%); */
-  /* border-radius: 20px; */
-  /* border: 5px dashed #fff; */
-  /* overflow: hidden; */
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* align-items: center; */
-  /* justify-content: center; */
-  /* padding: 100px 200px; */
-  /* font-size: 24px; */
+/* position: absolute; */
+/* top: 50%; */
+/* left: 50%; */
+/* transform: translate(-50%, -50%); */
+/* border-radius: 20px; */
+/* border: 5px dashed #fff; */
+/* overflow: hidden; */
+/* display: flex; */
+/* flex-direction: column; */
+/* align-items: center; */
+/* justify-content: center; */
+/* padding: 100px 200px; */
+/* font-size: 24px; */
 /* } */
 
 .drop.drag-active {
@@ -565,9 +581,8 @@ a {
 }
 
 #allTools {
-  scroll-margin-top: 70px; 
-} 
-
+  scroll-margin-top: 70px;
+}
 
 /* .btn-azul {
   background-color: #4b68ff;

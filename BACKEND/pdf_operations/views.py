@@ -1,1 +1,261 @@
-urlpatterns = []
+import logging
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .models import PDFOperation
+from .serializers import (MergePDFSerializer, PDFOperationResultSerializer,
+                          PDFOperationSerializer)
+from .utils import merge_pdf_files, validate_merge_operation
+
+logger = logging.getLogger(__name__)
+
+
+@api_view(["GET"])
+def pdf_operations_info(request):
+    """General information about PDF operations API"""
+    return JsonResponse(
+        {
+            "message": "PDF Operations API",
+            "version": "1.0",
+            "available_operations": {
+                "merge": {
+                    "endpoint": "/api/pdf/merge/",
+                    "method": "POST",
+                    "description": "Merge multiple PDF files into one",
+                    "status": "available",
+                },
+                "split": {
+                    "endpoint": "/api/pdf/split/",
+                    "method": "POST",
+                    "description": "Split PDF into multiple files",
+                    "status": "coming_soon",
+                },
+                "compress": {
+                    "endpoint": "/api/pdf/compress/",
+                    "method": "POST",
+                    "description": "Compress PDF file size",
+                    "status": "coming_soon",
+                },
+                "convert": {
+                    "endpoint": "/api/pdf/convert/",
+                    "method": "POST",
+                    "description": "Convert PDFs to images or images to PDF",
+                    "status": "coming_soon",
+                },
+            },
+            "limits": {
+                "max_file_size_mb": 200,
+                "max_files_per_merge": 20,
+                "max_total_pages": 5000,
+                "max_total_size_mb": 500,
+            },
+        }
+    )
+
+
+@api_view(["POST"])
+def validate_merge(request):
+    """Validate files before merging"""
+    try:
+        # Get file IDs from request
+        file_ids = request.data.get("file_ids", [])
+
+        if not file_ids:
+            return Response(
+                {"success": False, "message": "No file IDs provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate the merge operation
+        validation_result = validate_merge_operation(file_ids)
+
+        if validation_result["valid"]:
+            return Response(
+                {
+                    "success": True,
+                    "message": "Files are valid for merging",
+                    "validation": validation_result,
+                }
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": validation_result["error"],
+                    "validation": validation_result,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    except Exception as e:
+        logger.error(f"Error validating merge: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Validation error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def merge_pdfs(request):
+    """Merge multiple PDF files"""
+    try:
+        # Validate request data
+        serializer = MergePDFSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        file_ids = serializer.validated_data["file_ids"]
+        output_filename = serializer.validated_data["output_filename"]
+
+        # Create operation record
+        operation = PDFOperation.objects.create(
+            operation_type="merge",
+            input_files=[str(fid) for fid in file_ids],
+            parameters={
+                "output_filename": output_filename,
+                "file_count": len(file_ids),
+            },
+        )
+
+        try:
+            # Mark as processing
+            operation.mark_as_processing()
+
+            # Perform the merge
+            merged_file = merge_pdf_files(file_ids, output_filename)
+
+            # Mark as completed
+            operation.mark_as_completed(str(merged_file.id))
+
+            # Return success response
+            return Response(
+                {
+                    "success": True,
+                    "message": f"Successfully merged {len(file_ids)} PDFs",
+                    "operation": {
+                        "id": operation.id,
+                        "status": operation.status,
+                        "output_file_id": merged_file.id,
+                        "download_url": request.build_absolute_uri(
+                            f"/api/files/download/{merged_file.id}/"
+                        ),
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as ve:
+            # Handle validation errors
+            operation.mark_as_failed(str(ve))
+            return Response(
+                {"success": False, "message": str(ve), "operation_id": operation.id},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            # Handle processing errors
+            operation.mark_as_failed(str(e))
+            logger.error(f"Error merging PDFs: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Error processing PDFs: {str(e)}",
+                    "operation_id": operation.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in merge_pdfs: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def get_operation_status(request, operation_id):
+    """Get the status of a PDF operation"""
+    try:
+        operation = get_object_or_404(PDFOperation, id=operation_id)
+
+        serializer = PDFOperationSerializer(operation)
+
+        return Response({"success": True, "operation": serializer.data})
+
+    except Exception as e:
+        return Response(
+            {"success": False, "message": f"Error retrieving operation: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["GET"])
+def get_operation_result(request, operation_id):
+    """Get the result of a completed PDF operation"""
+    try:
+        operation = get_object_or_404(PDFOperation, id=operation_id)
+
+        if operation.status == "completed" and operation.output_file:
+            download_url = request.build_absolute_uri(
+                f"/api/files/download/{operation.output_file}/"
+            )
+
+            return Response(
+                {
+                    "success": True,
+                    "message": "Operation completed successfully",
+                    "operation": PDFOperationSerializer(operation).data,
+                    "download_url": download_url,
+                }
+            )
+
+        elif operation.status == "failed":
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Operation failed: {operation.error_message}",
+                    "operation": PDFOperationSerializer(operation).data,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        elif operation.status in ["pending", "processing"]:
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Operation is still {operation.status}",
+                    "operation": PDFOperationSerializer(operation).data,
+                },
+                status=status.HTTP_202_ACCEPTED,
+            )
+
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Unknown operation status",
+                    "operation": PDFOperationSerializer(operation).data,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        return Response(
+            {
+                "success": False,
+                "message": f"Error retrieving operation result: {str(e)}",
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
