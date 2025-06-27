@@ -726,3 +726,142 @@ def validate_pdf_to_images_operation(file_id, pages_range=None):
 
     except (ValueError, Exception) as e:
         return {"valid": False, "error": str(e)}
+
+
+def rotate_pdf_file(
+    file_id, rotation_angle, pages="all", output_filename="rotated_document.pdf"
+):
+    """
+    Rotate pages in a PDF file
+
+    Args:
+        file_id: UUID of the PDF file to rotate
+        rotation_angle: Degrees to rotate (90, 180, 270, or -90, -180, -270)
+        pages: "all" or list of page numbers (1-indexed) to rotate
+        output_filename: Name for the output file
+
+    Returns:
+        TemporaryFile object of the rotated PDF
+
+    Raises:
+        ValueError: If validation fails
+        Exception: If PDF processing fails
+    """
+
+    # Validate input file
+    pdf_files = validate_pdf_files([file_id])
+    temp_file = pdf_files[0]
+
+    # Validate rotation angle
+    valid_angles = [90, 180, 270, -90, -180, -270]
+    if rotation_angle not in valid_angles:
+        raise ValueError(f"Invalid rotation angle. Must be one of: {valid_angles}")
+
+    # Create PDF writer for output
+    pdf_writer = PdfWriter()
+
+    try:
+        # Read the PDF file
+        with open(temp_file.full_file_path, "rb") as pdf_file:
+            pdf_reader = PdfReader(pdf_file)
+
+            # Check if PDF is encrypted
+            if pdf_reader.is_encrypted:
+                raise ValueError(
+                    f"PDF {temp_file.original_filename} is encrypted and cannot be rotated"
+                )
+
+            total_pages = len(pdf_reader.pages)
+
+            # Determine which pages to rotate
+            if pages == "all":
+                pages_to_rotate = list(range(total_pages))
+            else:
+                # Convert 1-indexed page numbers to 0-indexed
+                pages_to_rotate = []
+                for page_num in pages:
+                    if page_num < 1 or page_num > total_pages:
+                        raise ValueError(
+                            f"Invalid page number {page_num}. PDF has {total_pages} pages"
+                        )
+                    pages_to_rotate.append(page_num - 1)
+
+            # Process each page
+            for page_index in range(total_pages):
+                page = pdf_reader.pages[page_index]
+
+                # Rotate the page if it's in the list
+                if page_index in pages_to_rotate:
+                    page.rotate(rotation_angle)
+
+                pdf_writer.add_page(page)
+
+        # Create output buffer
+        output_buffer = io.BytesIO()
+        pdf_writer.write(output_buffer)
+        output_buffer.seek(0)
+
+        # Create temporary file for the rotated PDF
+        rotated_file = create_download_file(
+            file_content=output_buffer.getvalue(), filename=output_filename
+        )
+
+        return rotated_file
+
+    except Exception as e:
+        raise Exception(f"Failed to rotate PDF: {str(e)}")
+
+
+def validate_rotate_operation(file_id, rotation_angle, pages="all"):
+    """
+    Validate that a rotate operation can be performed
+
+    Args:
+        file_id: UUID of the PDF file
+        rotation_angle: Degrees to rotate
+        pages: "all" or list of page numbers
+
+    Returns:
+        dict with validation results and file information
+    """
+    try:
+        # Validate the PDF file
+        pdf_files = validate_pdf_files([file_id])
+        temp_file = pdf_files[0]
+
+        # Get file info
+        file_info = get_pdf_info(temp_file)
+
+        # Validate rotation angle
+        valid_angles = [90, 180, 270, -90, -180, -270]
+        if rotation_angle not in valid_angles:
+            raise ValueError(f"Invalid rotation angle. Must be one of: {valid_angles}")
+
+        # Validate pages if specific pages are provided
+        if pages != "all":
+            if not isinstance(pages, list):
+                raise ValueError("Pages must be 'all' or a list of page numbers")
+
+            total_pages = file_info.get("pages", 0)
+            for page_num in pages:
+                if (
+                    not isinstance(page_num, int)
+                    or page_num < 1
+                    or page_num > total_pages
+                ):
+                    raise ValueError(
+                        f"Invalid page number {page_num}. Must be between 1 and {total_pages}"
+                    )
+
+        return {
+            "valid": True,
+            "file_info": file_info,
+            "rotation_angle": rotation_angle,
+            "pages_to_rotate": pages,
+            "estimated_output_size_mb": file_info.get(
+                "size_mb", 0
+            ),  # Size should remain similar
+        }
+
+    except (ValueError, Exception) as e:
+        return {"valid": False, "error": str(e), "file_info": {}}
