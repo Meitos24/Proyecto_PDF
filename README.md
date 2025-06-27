@@ -2,7 +2,52 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Install nvm, node and react 
+```bash
+#Windows
+# Download and install fnm:
+winget install Schniz.fnm
+# Download and install Node.js:
+fnm install 22
+# Verify the Node.js version:
+node -v # Should print "v22.15.0".
+# Verify npm version:
+npm -v # Should print "10.9.2".
+
+#MacOs
+# Download and install nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# in lieu of restarting the shell
+\. "$HOME/.nvm/nvm.sh"
+# Download and install Node.js:
+nvm install 22
+# Verify the Node.js version:
+node -v # Should print "v22.15.0".
+nvm current # Should print "v22.15.0".
+# Verify npm version:
+npm -v # Should print "10.9.2".
+
+#Linux
+# Download and install fnm:
+curl -o- https://fnm.vercel.app/install | bash
+
+# Download and install Node.js:
+fnm install 22
+
+# Verify the Node.js version:
+node -v # Should print "v22.15.0".
+
+# Verify npm version:
+npm -v # Should print "10.9.2".
+
+#Install React and React-dom
+npm install react react-dom
+
+#Verify the instalation for React and React-dom
+npm list react react-dom
+```
+
+run the development server:
 
 ```bash
 npm run dev
