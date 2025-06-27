@@ -10,6 +10,13 @@ urlpatterns = [
     path("split/", views.split_pdf, name="split_pdf"),
     path("split/info/", views.get_pdf_info, name="get_pdf_info"),
     path("split/validate/", views.validate_split, name="validate_split"),
+    # PDF to Images conversion
+    path("convert/pdf-to-images/", views.pdf_to_images, name="pdf_to_images"),
+    path(
+        "convert/pdf-to-images/validate/",
+        views.validate_pdf_conversion,
+        name="validate_pdf_conversion",
+    ),
     # Operation status and results
     path(
         "operation/<uuid:operation_id>/",

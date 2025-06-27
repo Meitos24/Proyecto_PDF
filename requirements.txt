@@ -1,0 +1,16 @@
+asgiref==3.8.1
+certifi==2025.6.15
+charset-normalizer==3.4.2
+Django==5.2.3
+django-cors-headers==4.7.0
+djangorestframework==3.16.0
+idna==3.10
+pillow==11.2.1
+PyMuPDF==1.26.1
+pypdf==5.6.1
+PyPDF2==3.0.1
+python-dotenv==1.1.1
+reportlab==4.4.2
+requests==2.32.4
+sqlparse==0.5.3
+urllib3==2.5.0
