@@ -113,12 +113,12 @@ export default function Page() {
     <>
       <Navbar />
 
-      <main className="flex flex-col px-4 sm:px-6 md:px-8 mt-4">
+      <main className="flex flex-col px-4 sm:px-6 md:px-8 mt-20">
         {/* Título principal */}
-        <div className="flex justify-center items-center mt-2 mb-2">
-          <b className="main-titulo text-white font-inter text-2xl sm:text-3xl md:text-4xl text-center sm:text-left max-w-full sm:max-w-[600px] md:max-w-[784px] inline-block">
+        <div className="flex justify-center items-center mt-2 mb-2 px-4">
+          <h1 className="text-white font-inter text-xl sm:text-3xl md:text-4xl lg:text-5xl text-center max-w-screen-md leading-snug">
             Potencia tu productividad con FreePDFs
-          </b>
+          </h1>
         </div>
 
         {/* Subtítulo */}
