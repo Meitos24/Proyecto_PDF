@@ -6,6 +6,10 @@ urlpatterns = [
     # PDF Merge operations
     path("merge/", views.merge_pdfs, name="merge_pdfs"),
     path("merge/validate/", views.validate_merge, name="validate_merge"),
+    # PDF Split operations
+    path("split/", views.split_pdf, name="split_pdf"),
+    path("split/info/", views.get_pdf_info, name="get_pdf_info"),
+    path("split/validate/", views.validate_split, name="validate_split"),
     # Operation status and results
     path(
         "operation/<uuid:operation_id>/",

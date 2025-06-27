@@ -7,9 +7,21 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import PDFOperation
-from .serializers import (MergePDFSerializer, PDFOperationResultSerializer,
-                          PDFOperationSerializer)
-from .utils import merge_pdf_files, validate_merge_operation
+from .serializers import (
+    MergePDFSerializer,
+    PDFOperationResultSerializer,
+    PDFOperationSerializer,
+    PDFSplitInfoSerializer,
+    SplitPDFSerializer,
+    SplitValidationSerializer,
+)
+from .utils import (
+    get_pdf_split_info,
+    merge_pdf_files,
+    split_pdf_by_pages,
+    validate_merge_operation,
+    validate_split_operation,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -257,5 +269,212 @@ def get_operation_result(request, operation_id):
                 "success": False,
                 "message": f"Error retrieving operation result: {str(e)}",
             },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def split_pdf(request):
+    """Split a PDF file"""
+    try:
+        # Validate request data
+        serializer = SplitPDFSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        file_id = serializer.validated_data["file_id"]
+        split_options = {
+            "mode": serializer.validated_data["mode"],
+            "output_prefix": serializer.validated_data["output_prefix"],
+        }
+
+        # Add mode-specific options
+        if split_options["mode"] == "page_ranges":
+            split_options["ranges"] = serializer.validated_data.get("ranges", [])
+        elif split_options["mode"] == "every_n_pages":
+            split_options["pages_per_split"] = serializer.validated_data.get(
+                "pages_per_split"
+            )
+
+        # Create operation record
+        operation = PDFOperation.objects.create(
+            operation_type="split",
+            input_files=[str(file_id)],
+            parameters=split_options,
+        )
+
+        try:
+            # Mark as processing
+            operation.mark_as_processing()
+
+            # Perform the split
+            split_result, file_count, is_single_file = split_pdf_by_pages(
+                file_id, split_options
+            )
+
+            # Mark as completed
+            operation.mark_as_completed(str(split_result.id))
+
+            # Determine response message based on output type
+            if is_single_file:
+                message = f"Successfully extracted pages as single PDF"
+                file_type = "PDF"
+            else:
+                message = f"Successfully split PDF into {file_count} files (ZIP)"
+                file_type = "ZIP"
+
+            # Return success response
+            return Response(
+                {
+                    "success": True,
+                    "message": message,
+                    "operation": {
+                        "id": operation.id,
+                        "status": operation.status,
+                        "output_file_id": split_result.id,
+                        "file_count": file_count,
+                        "is_single_file": is_single_file,
+                        "file_type": file_type,
+                        "download_url": request.build_absolute_uri(
+                            f"/api/files/download/{split_result.id}/"
+                        ),
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as ve:
+            # Handle validation errors
+            operation.mark_as_failed(str(ve))
+            return Response(
+                {"success": False, "message": str(ve), "operation_id": operation.id},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            # Handle processing errors
+            operation.mark_as_failed(str(e))
+            logger.error(f"Error splitting PDF: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Error processing PDF: {str(e)}",
+                    "operation_id": operation.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in split_pdf: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Unexpected error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def get_pdf_info(request):
+    """Get information about a PDF for splitting"""
+    try:
+        serializer = PDFSplitInfoSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        file_id = serializer.validated_data["file_id"]
+
+        # Get PDF information
+        pdf_info = get_pdf_split_info(file_id)
+
+        if "error" in pdf_info:
+            return Response(
+                {
+                    "success": False,
+                    "message": pdf_info["error"],
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "pdf_info": pdf_info,
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting PDF info: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Error getting PDF info: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def validate_split(request):
+    """Validate split operation before processing"""
+    try:
+        serializer = SplitValidationSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        file_id = serializer.validated_data["file_id"]
+        split_options = {
+            "mode": serializer.validated_data.get("mode", "all_pages"),
+        }
+
+        # Add mode-specific options
+        if split_options["mode"] == "page_ranges":
+            split_options["ranges"] = serializer.validated_data.get("ranges", [])
+        elif split_options["mode"] == "every_n_pages":
+            split_options["pages_per_split"] = serializer.validated_data.get(
+                "pages_per_split"
+            )
+
+        # Validate the split operation
+        validation_result = validate_split_operation(file_id, split_options)
+
+        if validation_result["valid"]:
+            return Response(
+                {
+                    "success": True,
+                    "message": "Split operation is valid",
+                    "validation": validation_result,
+                }
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": validation_result["error"],
+                    "validation": validation_result,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    except Exception as e:
+        logger.error(f"Error validating split: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Validation error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
