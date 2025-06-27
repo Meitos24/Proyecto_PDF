@@ -18,6 +18,9 @@ urlpatterns = [
         views.validate_pdf_conversion,
         name="validate_pdf_conversion",
     ),
+    # PDF Rotate operations
+    path("rotate/", views.rotate_pdf, name="rotate_pdf"),
+    path("rotate/validate/", views.validate_rotate, name="validate_rotate"),
     # Operation status and results
     path(
         "operation/<uuid:operation_id>/",

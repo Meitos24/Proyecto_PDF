@@ -247,3 +247,49 @@ class ImagesToPDFSerializer(serializers.Serializer):
         if not value.lower().endswith(".pdf"):
             value += ".pdf"
         return value
+
+
+class RotatePDFSerializer(serializers.Serializer):
+    """Serializer for PDF rotate operation"""
+
+    file_id = serializers.UUIDField(help_text="UUID of the PDF file to rotate")
+    rotation_angle = serializers.IntegerField(
+        help_text="Degrees to rotate (90, 180, 270, -90, -180, -270)"
+    )
+    pages = serializers.CharField(
+        default="all",
+        help_text="'all' to rotate all pages, or comma-separated page numbers (e.g., '1,3,5')",
+    )
+    output_filename = serializers.CharField(
+        max_length=255,
+        default="rotated_document.pdf",
+        help_text="Name for the output file",
+    )
+
+    def validate_rotation_angle(self, value):
+        valid_angles = [90, 180, 270, -90, -180, -270]
+        if value not in valid_angles:
+            raise serializers.ValidationError(
+                f"Invalid rotation angle. Must be one of: {valid_angles}"
+            )
+        return value
+
+    def validate_pages(self, value):
+        if value == "all":
+            return value
+
+        try:
+            # Parse comma-separated page numbers
+            pages = [int(p.strip()) for p in value.split(",") if p.strip()]
+            if not pages:
+                raise ValueError("No valid page numbers provided")
+            return pages
+        except ValueError:
+            raise serializers.ValidationError(
+                "Pages must be 'all' or comma-separated page numbers (e.g., '1,3,5')"
+            )
+
+    def validate_output_filename(self, value):
+        if not value.lower().endswith(".pdf"):
+            value += ".pdf"
+        return value

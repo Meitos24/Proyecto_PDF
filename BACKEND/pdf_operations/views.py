@@ -10,12 +10,13 @@ from .models import PDFOperation
 from .serializers import (ImagesToPDFSerializer, MergePDFSerializer,
                           PDFOperationResultSerializer, PDFOperationSerializer,
                           PDFSplitInfoSerializer, PDFToImagesSerializer,
-                          SplitPDFSerializer, SplitValidationSerializer)
-from .utils import convert_images_to_pdf  # Add this
-from .utils import convert_pdf_to_images  # Add this
-from .utils import validate_pdf_to_images_operation  # Add this
-from .utils import (get_pdf_split_info, merge_pdf_files, split_pdf_by_pages,
-                    validate_merge_operation, validate_split_operation)
+                          RotatePDFSerializer, SplitPDFSerializer,
+                          SplitValidationSerializer)
+from .utils import (convert_images_to_pdf, convert_pdf_to_images,
+                    get_pdf_split_info, merge_pdf_files, rotate_pdf_file,
+                    split_pdf_by_pages, validate_merge_operation,
+                    validate_pdf_to_images_operation,
+                    validate_rotate_operation, validate_split_operation)
 
 logger = logging.getLogger(__name__)
 
@@ -720,5 +721,149 @@ def validate_pdf_conversion(request):
         logger.error(f"Error validating PDF conversion: {str(e)}")
         return Response(
             {"success": False, "message": f"Validation error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def validate_rotate(request):
+    """Validate files before rotating"""
+    try:
+        # Get parameters from request
+        file_id = request.data.get("file_id")
+        rotation_angle = request.data.get("rotation_angle", 90)
+        pages = request.data.get("pages", "all")
+
+        if not file_id:
+            return Response(
+                {"success": False, "message": "No file ID provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Parse pages if it's a string
+        if isinstance(pages, str) and pages != "all":
+            try:
+                pages = [int(p.strip()) for p in pages.split(",") if p.strip()]
+            except ValueError:
+                return Response(
+                    {"success": False, "message": "Invalid page format"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # Validate the rotate operation
+        validation_result = validate_rotate_operation(file_id, rotation_angle, pages)
+
+        if validation_result["valid"]:
+            return Response(
+                {
+                    "success": True,
+                    "message": "File is valid for rotation",
+                    "validation": validation_result,
+                }
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": validation_result["error"],
+                    "validation": validation_result,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    except Exception as e:
+        logger.error(f"Error validating rotate: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Validation error: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["POST"])
+def rotate_pdf(request):
+    """Rotate pages in a PDF file"""
+    try:
+        # Validate request data
+        serializer = RotatePDFSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid request data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        file_id = serializer.validated_data["file_id"]
+        rotation_angle = serializer.validated_data["rotation_angle"]
+        pages = serializer.validated_data["pages"]
+        output_filename = serializer.validated_data["output_filename"]
+
+        # Create operation record
+        operation = PDFOperation.objects.create(
+            operation_type="rotate",
+            input_files=[str(file_id)],
+            parameters={
+                "rotation_angle": rotation_angle,
+                "pages": pages if pages == "all" else ",".join(map(str, pages)),
+                "output_filename": output_filename,
+            },
+        )
+
+        try:
+            # Mark as processing
+            operation.mark_as_processing()
+
+            # Perform the rotation
+            rotated_file = rotate_pdf_file(
+                file_id, rotation_angle, pages, output_filename
+            )
+
+            # Mark as completed
+            operation.mark_as_completed(str(rotated_file.id))
+
+            # Return success response
+            return Response(
+                {
+                    "success": True,
+                    "message": f"Successfully rotated PDF by {rotation_angle} degrees",
+                    "operation": {
+                        "id": operation.id,
+                        "status": operation.status,
+                        "output_file_id": rotated_file.id,
+                        "download_url": request.build_absolute_uri(
+                            f"/api/files/download/{rotated_file.id}/"
+                        ),
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        except ValueError as ve:
+            # Handle validation errors
+            operation.mark_as_failed(str(ve))
+            return Response(
+                {"success": False, "message": str(ve), "operation_id": operation.id},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except Exception as e:
+            # Handle processing errors
+            operation.mark_as_failed(str(e))
+            logger.error(f"Error rotating PDF: {str(e)}")
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Error processing PDF: {str(e)}",
+                    "operation_id": operation.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    except Exception as e:
+        logger.error(f"Unexpected error in rotate_pdf: {str(e)}")
+        return Response(
+            {"success": False, "message": f"Unexpected error: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
